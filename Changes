@@ -1,0 +1,9 @@
+Revision history for PAGI-Middleware-Session-Store-Cookie
+
+0.001001  2026-03-16
+    - Initial release
+    - AES-256-GCM encrypted client-side session storage
+    - Implements PAGI::Middleware::Session::Store interface
+    - set() returns encrypted blob as transport value
+    - get() decrypts and verifies, returns undef for tampered/invalid data
+    - No server-side storage needed

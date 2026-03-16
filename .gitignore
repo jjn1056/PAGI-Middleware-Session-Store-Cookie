@@ -1,0 +1,30 @@
+# Perl build artifacts
+blib/
+Makefile
+Makefile.old
+MYMETA.*
+pm_to_blib
+*.o
+*.bs
+
+# Dist::Zilla
+.build/
+PAGI-Middleware-Session-Store-Cookie-*/
+*.tar.gz
+
+# Editor/IDE
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Claude Code
+CLAUDE.md
+TODO*.md
+.claude/
+.private-journal/
+docs/

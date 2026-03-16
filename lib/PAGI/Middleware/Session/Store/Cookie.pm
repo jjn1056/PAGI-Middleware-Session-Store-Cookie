@@ -144,7 +144,9 @@ sub _decrypt {
 sub _random_bytes {
     my ($n) = @_;
 
-    # Use /dev/urandom if available, fall back to Perl's rand
+    # Use /dev/urandom for cryptographically secure random bytes.
+    # Falls back to Perl's rand() if /dev/urandom is unavailable
+    # (e.g., on some non-Unix systems). See SECURITY section for details.
     if (open my $fh, '<:raw', '/dev/urandom') {
         my $bytes;
         read($fh, $bytes, $n) == $n or die "Short read from /dev/urandom";
@@ -152,6 +154,9 @@ sub _random_bytes {
         return $bytes;
     }
 
+    warn "PAGI::Middleware::Session::Store::Cookie: /dev/urandom not available, "
+       . "falling back to Perl's rand() for IV generation. "
+       . "Install Crypt::URandom for secure random bytes on this platform.\n";
     return join('', map { chr(int(rand(256))) } 1 .. $n);
 }
 
@@ -168,6 +173,26 @@ via SHA-256.
 
 Each encryption uses a random 12-byte IV, so the same session data
 produces different ciphertext each time.
+
+=head2 IV Generation
+
+The encryption IV is generated from C</dev/urandom> when available
+(all modern Unix/Linux/macOS systems). On systems without
+C</dev/urandom>, the module falls back to Perl's C<rand()>, which is
+B<not cryptographically secure> — a runtime warning is emitted in
+this case. If you are running on such a system, install
+L<Crypt::URandom> and the module will use it automatically.
+
+B<Note:> A predictable IV does not compromise the confidentiality or
+authenticity of AES-GCM (the key is still required), but it may allow
+an attacker to detect when the same session data is re-encrypted,
+which leaks information about session changes.
+
+=head2 Cookie Size
+
+HTTP cookies are limited to approximately 4KB by most browsers.
+Large session data will produce cookies that exceed this limit and
+be silently rejected by the browser. Keep session data small.
 
 =head1 SEE ALSO
 

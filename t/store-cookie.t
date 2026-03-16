@@ -1,4 +1,4 @@
-# t/middleware/session/store-cookie.t
+# t/store-cookie.t
 #
 # Test cookie-based session store (encrypted client-side storage)
 #
@@ -6,11 +6,10 @@ use strict;
 use warnings;
 use Test2::V0;
 use Future::AsyncAwait;
-use IO::Async::Loop;
+use Future;
 use PAGI::Middleware::Session::Store::Cookie;
 
-my $loop = IO::Async::Loop->new;
-sub run_async (&) { $loop->await($_[0]->()) }
+sub run_async (&) { $_[0]->()->get }
 
 my $SECRET = 'a-secret-key-that-is-at-least-32-bytes-long!!';
 

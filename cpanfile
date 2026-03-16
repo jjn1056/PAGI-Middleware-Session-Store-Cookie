@@ -18,7 +18,6 @@ requires 'Future', '0.50';
 on 'test' => sub {
     requires 'Test2::V0', '0.000159';
     requires 'Future::AsyncAwait', '0.66';
-    requires 'IO::Async::Loop';
 };
 
 # Development

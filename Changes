@@ -7,3 +7,5 @@ Revision history for PAGI-Middleware-Session-Store-Cookie
     - set() returns encrypted blob as transport value
     - get() decrypts and verifies, returns undef for tampered/invalid data
     - No server-side storage needed
+    - Runtime warning when /dev/urandom unavailable (insecure IV fallback)
+    - Counter example app included

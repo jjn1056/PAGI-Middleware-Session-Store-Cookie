@@ -22,6 +22,8 @@ use PAGI::Middleware::Session::Store::Cookie;
 my $app = async sub {
     my ($scope, $receive, $send) = @_;
 
+    die "Unsupported scope type: $scope->{type}" unless $scope->{type} eq 'http';
+
     my $session = $scope->{'pagi.session'};
     my $path = $scope->{path} // '/';
 

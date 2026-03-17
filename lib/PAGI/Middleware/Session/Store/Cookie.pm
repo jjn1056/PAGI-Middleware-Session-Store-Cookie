@@ -2,6 +2,9 @@ package PAGI::Middleware::Session::Store::Cookie;
 
 use strict;
 use warnings;
+
+our $VERSION = '0.001003';
+
 use parent 'PAGI::Middleware::Session::Store';
 use Future;
 use JSON::MaybeXS qw(encode_json decode_json);
@@ -202,6 +205,26 @@ which leaks information about session changes.
 HTTP cookies are limited to approximately 4KB by most browsers.
 Large session data will produce cookies that exceed this limit and
 be silently rejected by the browser. Keep session data small.
+
+=head1 AUTHORS
+
+John Napiorkowski
+
+OpenAI Codex
+
+Anthropic Claude
+
+=head1 LICENSE
+
+This software is Copyright (c) 2026 by John Napiorkowski.
+
+This is free software, licensed under:
+
+  The Artistic License 2.0 (GPL Compatible)
+
+For the full license text, see:
+
+L<https://www.perlfoundation.org/artistic-license-20.html>
 
 =head1 SEE ALSO
 

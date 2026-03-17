@@ -1,5 +1,10 @@
 Revision history for PAGI-Middleware-Session-Store-Cookie
 
+0.001003  2026-03-17
+    - Add a recognized Artistic 2.0 license section to the main module POD
+    - Add an explicit module version matching the distribution version
+    - Add an AUTHORS section to the main module POD
+
 0.001002  2026-03-16
     - Fix non-ASCII character in POD (em dash before =encoding)
     - Document new() constructor method and required secret parameter

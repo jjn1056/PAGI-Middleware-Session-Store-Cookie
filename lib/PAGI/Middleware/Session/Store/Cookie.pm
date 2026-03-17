@@ -51,6 +51,15 @@ sub new {
 
 =head1 METHODS
 
+=head2 new
+
+    my $store = PAGI::Middleware::Session::Store::Cookie->new(
+        secret => 'at-least-32-bytes-of-secret-key!',
+    );
+
+Creates a new cookie session store. The C<secret> parameter is required
+and is used to derive the AES-256 encryption key via SHA-256.
+
 =head2 get
 
     my $data = await $store->get($encrypted_blob);
@@ -179,7 +188,7 @@ produces different ciphertext each time.
 The encryption IV is generated from C</dev/urandom> when available
 (all modern Unix/Linux/macOS systems). On systems without
 C</dev/urandom>, the module falls back to Perl's C<rand()>, which is
-B<not cryptographically secure> — a runtime warning is emitted in
+B<not cryptographically secure> -- a runtime warning is emitted in
 this case. If you are running on such a system, install
 L<Crypt::URandom> and the module will use it automatically.
 

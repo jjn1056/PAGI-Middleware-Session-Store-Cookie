@@ -235,6 +235,26 @@ subtest 'mutating an existing session round-trips through the real middleware + 
     };
     ok(defined $decoded, 'store decrypts the Set-Cookie blob from the mutation response');
     is($decoded->{counter}, 2, 'decrypted blob carries the mutated value, not the stale one');
+
+    # Request 3: pure read of the existing session — the dirty check must
+    # compare equal through a real Store::Cookie decrypt (numbers, booleans,
+    # and reserved keys included), so no Set-Cookie is emitted. Guards the
+    # inverse regression: a false-dirty here would re-emit the cookie on
+    # every response.
+    my (@events3, $seen);
+    my $app3 = async sub {
+        my ($scope, $receive, $send) = @_;
+        $seen = $scope->{'pagi.session'}{counter};
+        await $send->({ type => 'http.response.start', status => 200, headers => [] });
+        await $send->({ type => 'http.response.body', body => 'OK', more => 0 });
+    };
+    my $scope3 = $make_scope->(headers => [['Cookie', "pagi_session=$blob2"]]);
+    run_async {
+        $session_mw->wrap($app3)->($scope3, async sub { {} }, async sub { push @events3, $_[0] })
+    };
+
+    is($seen, 2, 'request 3 (pure read) sees the mutated session');
+    ok(!defined $set_cookie->(\@events3), 'pure read of an existing session emits no Set-Cookie');
 };
 
 done_testing;

@@ -5,6 +5,10 @@ requires 'perl', '5.018';
 # Core PAGI session interface
 requires 'PAGI', '0.001020';
 
+# Base session Store interface (PAGI::Middleware::Session::Store), which
+# Store::Cookie inherits from via 'use parent'
+requires 'PAGI::Tools', '0.001020';
+
 # Encryption
 requires 'CryptX', '0.080';
 

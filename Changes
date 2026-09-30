@@ -1,5 +1,14 @@
 Revision history for PAGI-Middleware-Session-Store-Cookie
 
+UNRELEASED
+    - Document using the store with PAGI::Middleware::Session: the SYNOPSIS
+      shows it wired into a PAGI::Compose application, and a new section
+      covers the controls and their consequences -- the default cookie state
+      is required, the two secrets, cookie_options replacing the defaults,
+      expiry counting from the last response that changed the session, and
+      destroy clearing only the requesting client's copy.
+    - Add t/middleware-behaviour.t pinning the expiry and destroy behaviour.
+
 0.001005  2026-07-15
     - Declare the runtime dependency on PAGI::Tools (>= 0.002002), which
       provides the PAGI::Middleware::Session::Store base class that

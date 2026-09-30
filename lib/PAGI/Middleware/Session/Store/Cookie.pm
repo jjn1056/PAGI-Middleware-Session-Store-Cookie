@@ -19,13 +19,30 @@ PAGI::Middleware::Session::Store::Cookie - Encrypted client-side session store
 
 =head1 SYNOPSIS
 
+    # As PAGI::Middleware::Session's store (PAGI::Compose and
+    # PAGI::Routing's middleware() need PAGI::Tools 0.002003 or later)
+    use PAGI::Compose qw(compose);
+    use PAGI::Routing qw(middleware route);
     use PAGI::Middleware::Session::Store::Cookie;
 
+    my $app = compose(
+        middleware => [
+            middleware('Session',
+                secret => $ENV{SESSION_SECRET},
+                store  => PAGI::Middleware::Session::Store::Cookie->new(
+                    secret => $ENV{STORE_SECRET},
+                ),
+                cookie_options => { httponly => 1, path => '/', samesite => 'Lax', secure => 1 },
+                expire         => 8 * 3600,
+            ),
+        ],
+        routes => [ ... ],
+    );
+
+    # The store on its own; all methods return Futures
     my $store = PAGI::Middleware::Session::Store::Cookie->new(
         secret => 'at-least-32-bytes-of-secret-key!',
     );
-
-    # All methods return Futures
     my $blob = await $store->set('session_id', { user_id => 123 });
     my $data = await $store->get($blob);
     await $store->delete('session_id');
@@ -41,6 +58,46 @@ session data, or undef if decryption/verification fails.
 
 B<Limitations:> Cookie size is limited to ~4KB. Large sessions will fail.
 Session revocation requires server-side state (e.g., a blocklist).
+
+=head1 USING IT WITH PAGI::Middleware::Session
+
+The store only encrypts and decrypts; L<PAGI::Middleware::Session> decides
+when a session is loaded, saved and sent, and its cookie options are where
+most of the control is. Handlers read and change the session through
+L<PAGI::Session>.
+
+=over 4
+
+=item * B<Use the default cookie state.> The session travels in the value
+the middleware's state sends back, and only the cookie state
+(L<PAGI::Middleware::Session::State::Cookie>, the default) sends one. The
+header-based states never do, so with them nothing persists.
+
+=item * B<Two secrets.> The middleware's C<secret> and the store's C<secret>
+are separate arguments. Keep the store's long, random and the same on every
+worker; changing it makes every existing session unreadable, which logs
+everyone out.
+
+=item * B<The cookie.> C<cookie_name> (default C<pagi_session>),
+C<cookie_options> and C<expire> are the middleware's. C<cookie_options>
+I<replaces> the default set (C<httponly>, C<path>, C<samesite>), so restate
+those when adding C<secure>, as the SYNOPSIS does.
+
+=item * B<Expiry counts from the last change.> C<expire> (seconds, default
+3600) sets the cookie's C<Max-Age>, and the middleware also refuses a session
+whose recorded last access is older than C<expire>. With this store that
+record travels in the cookie, and a request that only reads the session sends
+no new cookie, so the clock restarts only when a response changes the
+session. A user who only reads for longer than C<expire> is logged out. Set
+C<expire> to the longest session you intend, or change the session (for
+example, record a timestamp) on requests that should keep it alive.
+
+=item * B<Logout clears one copy.> C<< $session->destroy >> clears the
+cookie on the client that asked, but a copy of the old cookie still opens the
+session until it expires: nothing on the server can revoke it. If that
+matters, use a server-side store.
+
+=back
 
 =cut
 
@@ -201,8 +258,11 @@ L<https://www.perlfoundation.org/artistic-license-20.html>
 
 =head1 SEE ALSO
 
-L<PAGI::Middleware::Session::Store> - Base store interface
+L<PAGI::Middleware::Session> - Session management middleware (its STATE CLASSES
+and STORE CLASSES sections)
 
-L<PAGI::Middleware::Session> - Session management middleware
+L<PAGI::Session> - The helper handlers use to read and change the session
+
+L<PAGI::Middleware::Session::Store> - Base store interface
 
 =cut

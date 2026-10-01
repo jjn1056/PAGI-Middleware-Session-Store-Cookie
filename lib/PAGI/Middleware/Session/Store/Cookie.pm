@@ -31,13 +31,12 @@ PAGI::Middleware::Session::Store::Cookie - Encrypted client-side session store
             middleware('Session',
                 secret => $ENV{SESSION_SECRET},
                 state  => PAGI::Middleware::Session::State::Cookie->new(
-                    cookie_options => { httponly => 1, path => '/', samesite => 'Lax', secure => 1 },
-                    expire         => 8 * 3600,    # the cookie's Max-Age
+                    cookie_options => { secure => 1 },    # added to the defaults
                 ),
                 store  => PAGI::Middleware::Session::Store::Cookie->new(
                     secret => $ENV{STORE_SECRET},
                 ),
-                expire => 8 * 3600,                # the server-side idle timeout
+                expire => 8 * 3600,    # the server-side idle timeout
             ),
         ],
         routes => [ ... ],
@@ -85,13 +84,14 @@ everyone out.
 =item * B<The cookie.> Its name, attributes (C<Secure> and so on) and
 lifetime are configured on L<PAGI::Middleware::Session::State::Cookie>
 (C<cookie_name>, C<cookie_options>, C<expire>), passed to the middleware as
-C<state>, as the SYNOPSIS does. C<cookie_options> I<replaces> the default set
-(C<httponly>, C<path>, C<samesite>), so restate those when adding C<secure>.
+C<state>, as the SYNOPSIS does. C<cookie_options> merges into its defaults
+(C<HttpOnly>, C<Path=/>, C<SameSite=Lax>), so C<< { secure => 1 } >> is enough
+to add C<Secure>.
 
-=item * B<Two expiries.> State::Cookie's C<expire> is the cookie's
-C<Max-Age>; the middleware's C<expire> is a server-side idle timeout -- it
-refuses a session whose recorded last access is older. Both default to 3600;
-set them together.
+=item * B<One clock by default.> The middleware's C<expire> (default 3600) is
+a server-side idle timeout: it refuses a session whose recorded last access
+is older. The cookie itself has no C<Max-Age> unless you give State::Cookie
+an C<expire>, so by default it lasts for the browser session.
 
 =item * B<The idle timeout counts from the last change.> With this store the
 last-access record travels in the cookie, and a request that only reads the

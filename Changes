@@ -9,7 +9,9 @@ UNRELEASED
       takes cookie options on the middleware), the cookie's Max-Age versus
       the middleware's server-side idle timeout, that timeout counting from
       the last response that changed the session, and destroy clearing only
-      the requesting client's copy.
+      the requesting client's copy. Reflects PAGI::Tools 0.002003's
+      State::Cookie defaults: no Max-Age, and cookie_options merged into the
+      defaults.
     - Add t/middleware-behaviour.t pinning the expiry and destroy behaviour.
     - examples/counter.pl uses PAGI::Compose and PAGI::Session handlers
       (destroy instead of setting _destroyed), and separate session and

@@ -21,17 +21,16 @@ PAGI::Middleware::Session::Store::Cookie - Encrypted client-side session store
 
     # As PAGI::Middleware::Session's store (PAGI::Tools 0.002003 or later)
     use PAGI::Compose qw(compose);
+    use PAGI::Middleware::Session qw(session_state session_store);
     use PAGI::Routing qw(middleware route);
-    use PAGI::Middleware::Session::State::Cookie;
-    use PAGI::Middleware::Session::Store::Cookie;
 
     my $app = compose(
         middleware => [
             middleware('Session',
-                state  => PAGI::Middleware::Session::State::Cookie->new(
+                state  => session_state('Cookie',
                     cookie_options => { secure => 1 },    # added to the defaults
                 ),
-                store  => PAGI::Middleware::Session::Store::Cookie->new(
+                store  => session_store('Cookie',
                     secret => $ENV{STORE_SECRET},
                 ),
                 expire => 8 * 3600,    # the server-side idle timeout
@@ -41,6 +40,8 @@ PAGI::Middleware::Session::Store::Cookie - Encrypted client-side session store
     );
 
     # The store on its own; all methods return Futures
+    use PAGI::Middleware::Session::Store::Cookie;
+
     my $store = PAGI::Middleware::Session::Store::Cookie->new(
         secret => 'at-least-32-bytes-of-secret-key!',
     );

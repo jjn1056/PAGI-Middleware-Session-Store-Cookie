@@ -18,6 +18,9 @@ Revision history for PAGI-Middleware-Session-Store-Cookie
       required, the store's secret, configuring the cookie, the server-side
       idle timeout, active readers staying signed in, and destroy clearing
       only the requesting client's cookie (no server-side revocation).
+    - The SYNOPSIS and examples/counter.pl build the store with PAGI::Tools'
+      session_store('Cookie', ...) (and the cookie with session_state);
+      PAGI::Middleware::Session::Store::Cookie->new works the same.
     - examples/counter.pl is a PAGI::Compose application with PAGI::Session
       handlers (destroy instead of setting the internal _destroyed key).
     - New tests: t/middleware-behaviour.t (the re-send timeline and destroy)

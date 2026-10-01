@@ -18,7 +18,7 @@ use strict;
 use warnings;
 
 use PAGI::Compose qw(compose);
-use PAGI::Middleware::Session::Store::Cookie;
+use PAGI::Middleware::Session qw(session_store);
 use PAGI::Response qw(text_response);
 use PAGI::Routing qw(middleware route);
 use PAGI::Session qw(session);
@@ -41,7 +41,7 @@ sub reset_session {
 compose(
     middleware => [
         middleware('Session',
-            store  => PAGI::Middleware::Session::Store::Cookie->new(
+            store  => session_store('Cookie',
                 secret => 'change-me-store-secret-at-least-32-bytes',
             ),
         ),

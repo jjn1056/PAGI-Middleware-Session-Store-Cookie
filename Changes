@@ -11,6 +11,10 @@ UNRELEASED
       the last response that changed the session, and destroy clearing only
       the requesting client's copy.
     - Add t/middleware-behaviour.t pinning the expiry and destroy behaviour.
+    - examples/counter.pl uses PAGI::Compose and PAGI::Session handlers
+      (destroy instead of setting _destroyed), and separate session and
+      store secrets; t/example-counter.t runs it (skipped before PAGI::Tools
+      0.002003).
 
 0.001005  2026-07-15
     - Declare the runtime dependency on PAGI::Tools (>= 0.002002), which

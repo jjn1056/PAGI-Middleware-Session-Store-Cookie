@@ -1,28 +1,27 @@
 Revision history for PAGI-Middleware-Session-Store-Cookie
 
-UNRELEASED
-    - Require PAGI::Tools 0.002003. Its Session middleware takes no secret
-      (and dies if given one), configures the cookie on State::Cookie, and
-      re-sends the cookie on a read once the session's last access is past
-      half of expire -- so a reader of a cookie-stored session is no longer
-      signed out expire after their last change. The POD, example and tests
-      follow; t/middleware-behaviour.t pins the re-send.
+0.001006  UNRELEASED
+    - Require PAGI::Tools 0.002003. This release is documented and tested
+      against its PAGI::Middleware::Session, which changed:
+        * The middleware takes no secret (passing one dies). This store's own
+          secret -- the encryption key -- is unchanged and still required.
+        * The session cookie is configured on
+          PAGI::Middleware::Session::State::Cookie, passed as state; it sets
+          no Max-Age by default and merges cookie_options into its defaults.
+        * A read re-sends the cookie once the session's last access is past
+          half of the middleware's expire, so an active user of a
+          cookie-stored session is no longer signed out expire after their
+          last change.
     - Document using the store with PAGI::Middleware::Session: the SYNOPSIS
-      shows it wired into a PAGI::Compose application, and a new section
-      covers the controls and their consequences -- the default cookie state
-      is required, the two secrets, the cookie configured on
-      PAGI::Middleware::Session::State::Cookie (PAGI::Tools 0.002003 no longer
-      takes cookie options on the middleware), the cookie's Max-Age versus
-      the middleware's server-side idle timeout, that timeout counting from
-      the last response that changed the session, and destroy clearing only
-      the requesting client's copy. Reflects PAGI::Tools 0.002003's
-      State::Cookie defaults: no Max-Age, and cookie_options merged into the
-      defaults.
-    - Add t/middleware-behaviour.t pinning the expiry and destroy behaviour.
-    - examples/counter.pl uses PAGI::Compose and PAGI::Session handlers
-      (destroy instead of setting _destroyed), and separate session and
-      store secrets; t/example-counter.t runs it (skipped before PAGI::Tools
-      0.002003).
+      shows it in a PAGI::Compose application, and a new section, USING IT
+      WITH PAGI::Middleware::Session, covers the default cookie state being
+      required, the store's secret, configuring the cookie, the server-side
+      idle timeout, active readers staying signed in, and destroy clearing
+      only the requesting client's cookie (no server-side revocation).
+    - examples/counter.pl is a PAGI::Compose application with PAGI::Session
+      handlers (destroy instead of setting the internal _destroyed key).
+    - New tests: t/middleware-behaviour.t (the re-send timeline and destroy)
+      and t/example-counter.t (runs the example).
 
 0.001005  2026-07-15
     - Declare the runtime dependency on PAGI::Tools (>= 0.002002), which

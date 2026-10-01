@@ -4,7 +4,7 @@ requires 'perl', '5.018';
 
 # Base session Store interface (PAGI::Middleware::Session::Store), which
 # Store::Cookie inherits from via 'use parent'
-requires 'PAGI::Tools', '0.002002';
+requires 'PAGI::Tools', '0.002003';
 
 # Encryption
 requires 'CryptX', '0.080';

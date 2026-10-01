@@ -19,8 +19,7 @@ PAGI::Middleware::Session::Store::Cookie - Encrypted client-side session store
 
 =head1 SYNOPSIS
 
-    # As PAGI::Middleware::Session's store (PAGI::Compose and
-    # PAGI::Routing's middleware() need PAGI::Tools 0.002003 or later)
+    # As PAGI::Middleware::Session's store (PAGI::Tools 0.002003 or later)
     use PAGI::Compose qw(compose);
     use PAGI::Routing qw(middleware route);
     use PAGI::Middleware::Session::State::Cookie;
@@ -29,7 +28,6 @@ PAGI::Middleware::Session::Store::Cookie - Encrypted client-side session store
     my $app = compose(
         middleware => [
             middleware('Session',
-                secret => $ENV{SESSION_SECRET},
                 state  => PAGI::Middleware::Session::State::Cookie->new(
                     cookie_options => { secure => 1 },    # added to the defaults
                 ),
@@ -76,10 +74,9 @@ the middleware's state sends back, and only the cookie state
 (L<PAGI::Middleware::Session::State::Cookie>, the default) sends one. The
 header-based states never do, so with them nothing persists.
 
-=item * B<Two secrets.> The middleware's C<secret> and the store's C<secret>
-are separate arguments. Keep the store's long, random and the same on every
-worker; changing it makes every existing session unreadable, which logs
-everyone out.
+=item * B<The store's secret.> It is the encryption key. Keep it long, random
+and the same on every worker; changing it makes every existing session
+unreadable, which logs everyone out. (The middleware itself takes no secret.)
 
 =item * B<The cookie.> Its name, attributes (C<Secure> and so on) and
 lifetime are configured on L<PAGI::Middleware::Session::State::Cookie>
@@ -93,13 +90,12 @@ a server-side idle timeout: it refuses a session whose recorded last access
 is older. The cookie itself has no C<Max-Age> unless you give State::Cookie
 an C<expire>, so by default it lasts for the browser session.
 
-=item * B<The idle timeout counts from the last change.> With this store the
-last-access record travels in the cookie, and a request that only reads the
-session sends no new cookie, so the clock restarts only when a response
-changes the session. A user who only reads for longer than the middleware's
-C<expire> is logged out. Set it to the longest session you intend, or change
-the session (for example, record a timestamp) on requests that should keep it
-alive.
+=item * B<Active readers stay signed in.> With this store the last-access
+record travels in the cookie, and a request that only reads the session sends
+no new cookie -- until the record is more than half of the middleware's
+C<expire> old, when the middleware re-sends the cookie with a fresh one. So a
+user idle for longer than C<expire> is signed out, and an active user is not,
+whether they read or write.
 
 =item * B<Logout clears one copy.> C<< $session->destroy >> clears the
 cookie on the client that asked, but a copy of the old cookie still opens the

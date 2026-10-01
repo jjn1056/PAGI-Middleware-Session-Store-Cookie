@@ -1,6 +1,12 @@
 Revision history for PAGI-Middleware-Session-Store-Cookie
 
 UNRELEASED
+    - Require PAGI::Tools 0.002003. Its Session middleware takes no secret
+      (and dies if given one), configures the cookie on State::Cookie, and
+      re-sends the cookie on a read once the session's last access is past
+      half of expire -- so a reader of a cookie-stored session is no longer
+      signed out expire after their last change. The POD, example and tests
+      follow; t/middleware-behaviour.t pins the re-send.
     - Document using the store with PAGI::Middleware::Session: the SYNOPSIS
       shows it wired into a PAGI::Compose application, and a new section
       covers the controls and their consequences -- the default cookie state

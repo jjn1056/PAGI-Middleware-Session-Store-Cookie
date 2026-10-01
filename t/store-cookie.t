@@ -169,7 +169,6 @@ subtest 'round-trip through middleware pattern' => sub {
 subtest 'mutating an existing session round-trips through the real middleware + Store::Cookie' => sub {
     my $store = PAGI::Middleware::Session::Store::Cookie->new(secret => $SECRET);
     my $session_mw = PAGI::Middleware::Session->new(
-        secret => $SECRET,
         store  => $store,
     );
 

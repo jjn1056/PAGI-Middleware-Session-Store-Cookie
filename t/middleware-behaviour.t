@@ -46,34 +46,34 @@ sub request {
 
 sub session_mw {
     return PAGI::Middleware::Session->new(
-        secret => $SECRET,
         store  => PAGI::Middleware::Session::Store::Cookie->new(secret => $SECRET),
         @_,
     );
 }
 
-subtest 'expire counts from the last response that changed the session' => sub {
+subtest 'an active reader keeps the session: the cookie is re-sent past half of expire' => sub {
     my $mw = session_mw(expire => 10);
 
     local $NOW = 1_000;
     my (undef, $written) = request($mw, undef, sub { $_[0]{user} = 'ada' });
     ok($written, 'a change sends the session in a new cookie');
 
-    local $NOW = 1_006;
+    local $NOW = 1_004;
     my ($set, undef, $seen) = request($mw, $written);
-    is($seen->{user}, 'ada', 'a read inside expire finds the session');
-    is($set, undef, 'but a read sends no new cookie');
-
-    local $NOW = 1_012;
-    (undef, undef, $seen) = request($mw, $written);
-    is($seen->{user}, undef,
-        'so 12s after the change it has expired, although it was read 6s ago');
+    is($seen->{user}, 'ada', 'a read finds the session');
+    is($set, undef, 'and before half of expire sends no new cookie');
 
     local $NOW = 1_006;
-    my (undef, $rewritten) = request($mw, $written, sub { $_[0]{seen} = 1 });
+    my (undef, $refreshed) = request($mw, $written);
+    ok($refreshed && $refreshed ne $written,
+        'past half of expire a read re-sends the session with its new last access');
+
     local $NOW = 1_012;
-    (undef, undef, $seen) = request($mw, $rewritten);
-    is($seen->{user}, 'ada', 'a change at 6s restarts the clock');
+    (undef, undef, $seen) = request($mw, $refreshed);
+    is($seen->{user}, 'ada', '12s after the change the reader is still signed in');
+
+    (undef, undef, $seen) = request($mw, $written);
+    is($seen->{user}, undef, 'while a copy of the cookie nobody refreshed has expired');
 };
 
 subtest 'destroy clears the cookie on that client only' => sub {

@@ -36,12 +36,11 @@ sub reset_session {
     return text_response("Session destroyed. Visit / to start fresh.\n");
 }
 
-# Two secrets: the store's encrypts the cookie, so keep it long, random and
-# the same on every worker. Load both from configuration in a real app.
+# The store's secret encrypts the cookie: keep it long, random and the same
+# on every worker, and load it from configuration in a real app.
 compose(
     middleware => [
         middleware('Session',
-            secret => 'change-me-session-secret',
             store  => PAGI::Middleware::Session::Store::Cookie->new(
                 secret => 'change-me-store-secret-at-least-32-bytes',
             ),

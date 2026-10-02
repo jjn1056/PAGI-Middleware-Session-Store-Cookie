@@ -19,7 +19,7 @@ use warnings;
 
 use PAGI::Compose qw(compose);
 use PAGI::Middleware::Session qw(session_store);
-use PAGI::Response qw(text_response);
+use PAGI::Response qw(response);
 use PAGI::Routing qw(middleware route);
 use PAGI::Session qw(session);
 
@@ -27,13 +27,13 @@ sub count {
     my ($request) = @_;
     my $session = session($request);
     $session->set(count => $session->get('count', 0) + 1);
-    return text_response("Visit #" . $session->get('count') . "\n");
+    return response('Text', "Visit #" . $session->get('count') . "\n");
 }
 
 sub reset_session {
     my ($request) = @_;
     session($request)->destroy;
-    return text_response("Session destroyed. Visit / to start fresh.\n");
+    return response('Text', "Session destroyed. Visit / to start fresh.\n");
 }
 
 # The store's secret encrypts the cookie: keep it long, random and the same

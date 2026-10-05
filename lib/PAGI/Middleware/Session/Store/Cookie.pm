@@ -19,7 +19,7 @@ PAGI::Middleware::Session::Store::Cookie - Encrypted client-side session store
 
 =head1 SYNOPSIS
 
-    # As PAGI::Middleware::Session's store (PAGI::Tools 0.002003 or later)
+    # As PAGI::Middleware::Session's store (PAGI::Tools 0.003000 or later)
     use PAGI::Compose qw(compose);
     use PAGI::Middleware::Session qw(session_state session_store);
     use PAGI::Routing qw(middleware route);

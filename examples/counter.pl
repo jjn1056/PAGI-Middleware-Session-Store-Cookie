@@ -4,7 +4,7 @@
 # server-side storage, so any worker can serve any request and the count
 # survives a restart.
 #
-# Needs PAGI::Tools 0.002003 or later (PAGI::Compose, PAGI::Routing).
+# Needs PAGI::Tools 0.003000 or later (PAGI::Compose, PAGI::Routing).
 #
 # Run:
 #   pagi-server --app examples/counter.pl --port 5000

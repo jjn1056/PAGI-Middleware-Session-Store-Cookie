@@ -1,7 +1,7 @@
 Revision history for PAGI-Middleware-Session-Store-Cookie
 
 0.001006  UNRELEASED
-    - Require PAGI::Tools 0.002003. This release is documented and tested
+    - Require PAGI::Tools 0.003000. This release is documented and tested
       against its PAGI::Middleware::Session, which changed:
         * The middleware takes no secret (passing one dies). This store's own
           secret -- the encryption key -- is unchanged and still required.

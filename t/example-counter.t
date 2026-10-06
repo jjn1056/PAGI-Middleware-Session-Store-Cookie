@@ -7,7 +7,7 @@ use FindBin qw($Bin);
 # encrypted cookie, with /reset destroying it.
 
 eval { require PAGI::Compose; require PAGI::Test::Client; 1 }
-    or skip_all 'the example needs PAGI::Tools 0.002003 or later';
+    or skip_all 'the example needs PAGI::Tools 0.003000 or later';
 
 my $app = do "$Bin/../examples/counter.pl";
 is($@, '', 'the example loads');
